@@ -17,7 +17,7 @@ public class BoardRepository {
     }
     @Transactional
     public void save(BoardRequest.SaveDTO requsetDTO, int userId) {
-        Query query = em.createNativeQuery("inset into board_tb(title, content, user_id, created_at) values(?,?,?, now())");
+        Query query = em.createNativeQuery("insert into board_tb(title, content, user_id, created_at) values(?,?,?, now())");
         query.setParameter(1,requsetDTO.getTitle());
         query.setParameter(2,requsetDTO.getContent());
         query.setParameter(3, userId);
@@ -50,5 +50,17 @@ public class BoardRepository {
         responseDTO.setUsername(username);
 
         return responseDTO;
+    }
+    public Board FindById(int id){
+        Query query = em.createNativeQuery("select * from board_tb where id =?", Board.class);
+        query.setParameter(1,id);
+        Board board = (Board) query.getSingleResult();
+        return board;
+    }
+    @Transactional
+    public void deleteById(int id) {
+        Query query = em.createNativeQuery("delete from board_tb where id = ?");
+        query.setParameter(1, id);
+        query.executeUpdate();
     }
 }
