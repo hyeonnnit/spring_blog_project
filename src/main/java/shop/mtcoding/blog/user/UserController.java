@@ -1,18 +1,33 @@
 package shop.mtcoding.blog.user;
 
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-
+@RequiredArgsConstructor
 @Controller
 public class UserController {
+    private final UserRepository userRepository;
+    private final HttpSession session;
     @PostMapping("/login")
-    public String login(){
+    public String login(UserRequest.LoginDTO requestDTO){
+        System.out.println(requestDTO);
+        if (requestDTO.getUsername().length() < 3) {
+            return "error/400";
+        }
+        User user = userRepository.findByUsernameAndPassword(requestDTO);
+        if (user == null){
+            return "error/401";
+        }else {
+            session.setAttribute("sessionUser", user);
+        }
         return "redirect:/";
     }
     @PostMapping("/join")
     public String join(UserRequest.JoinDTO requsetDTO){
         System.out.println(requsetDTO);
+        userRepository.save(requsetDTO);
         return "user/loginForm";
     }
     @GetMapping("/joinForm")
@@ -32,6 +47,7 @@ public class UserController {
 
     @GetMapping("/logout")
     public String logout() {
+        session.invalidate();
         return "redirect:/";
     }
 }
