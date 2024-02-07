@@ -16,6 +16,36 @@ import java.util.List;
 public class BoardController {
     private final HttpSession session;
     private final BoardRepository boardRepository;
+
+    @PostMapping("/board/{id}/update")
+    public String update(@PathVariable int id, BoardRequest.UpdateDTO requestDTO){
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser==null){
+            return "redirect:/updateForm";
+        }
+        Board board = boardRepository.findById(id);
+        if (board==null){
+            return "error/400";
+        }
+        if (board.getUserId() != sessionUser.getId()){
+            return "error/403";
+        }
+        boardRepository.update(requestDTO, id);
+        return "redirect:/board/"+id;
+    }
+    @GetMapping("/board/{id}/updateForm")
+    public String updateForm(@PathVariable int id, HttpServletRequest request){
+        User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser == null){
+            return "redirect:/loginForm";
+        }
+        Board board = boardRepository.findById(id);
+        if (board.getUserId() != sessionUser.getId()){
+            return "error/403";
+        }
+        request.setAttribute("board",board);
+        return "board/updateForm";
+    }
     @PostMapping("/board/save")
     public String save(BoardRequest.SaveDTO requestDTO, HttpServletRequest request){
         User sessionUser = (User) session.getAttribute("sessionUser");
@@ -50,7 +80,7 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, HttpServletRequest request) {
 //        System.out.println("id: "+id);
-        BoardResponse.DetailDTO responseDTO = boardRepository.findById(id);
+        BoardResponse.DetailDTO responseDTO = boardRepository.findByIdUser(id);
         User sessionUser = (User) session.getAttribute("sessionUser");
         int 게시글작성자번호 = responseDTO.getUserId();
         int 로그인한사람의번호 = sessionUser.getId();
@@ -66,7 +96,7 @@ public class BoardController {
         if (sessionUser==null){
             return "redirect:/loginForm";
         }
-        Board board = boardRepository.FindById(id);
+        Board board = boardRepository.findById(id);
         if (board.getUserId() != sessionUser.getId()){
             request.setAttribute("status",403);
             request.setAttribute("msg", "게시글을 삭제할 권한이 없습니다.");
