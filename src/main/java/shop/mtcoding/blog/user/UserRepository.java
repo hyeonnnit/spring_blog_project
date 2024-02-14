@@ -28,4 +28,15 @@ public class UserRepository {
         User user = (User) query.getSingleResult();
         return user;
     }
+
+    public User findByUsername(String username) {
+        Query query = em.createNativeQuery("select * from user_tb where username=?",User.class);
+        query.setParameter(1,username);
+        try {
+            User user = (User) query.getSingleResult();
+            return user;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
