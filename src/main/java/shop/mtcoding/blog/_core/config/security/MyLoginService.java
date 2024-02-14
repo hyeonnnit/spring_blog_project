@@ -19,7 +19,7 @@ public class MyLoginService implements UserDetailsService {
         System.out.println("loadUserByUsername: "+username);
         User user = userRepository.findByUsername(username);
         if (user==null){
-            System.out.println("usersms null");
+            System.out.println("user null");
             return null;
         }else {
             System.out.println("user find");
