@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserController {
     private final UserRepository userRepository;
     private final HttpSession session;
-    @PostMapping("/login")
-    public String login(UserRequest.LoginDTO requestDTO){
-        System.out.println(requestDTO);
-        if (requestDTO.getUsername().length() < 3) {
-            return "error/400";
-        }
-        User user = userRepository.findByUsernameAndPassword(requestDTO);
-        if (user == null){
-            return "error/401";
-        }else {
-            session.setAttribute("sessionUser", user);
-        }
-        return "redirect:/";
-    }
+//    @PostMapping("/login")
+//    public String login(UserRequest.LoginDTO requestDTO){
+//        System.out.println(requestDTO);
+//        if (requestDTO.getUsername().length() < 3) {
+//            return "error/400";
+//        }
+//        User user = userRepository.findByUsernameAndPassword(requestDTO);
+//        if (user == null){
+//            return "error/401";
+//        }else {
+//            session.setAttribute("sessionUser", user);
+//        }
+//        return "redirect:/";
+//    }
     @PostMapping("/join")
     public String join(UserRequest.JoinDTO requsetDTO){
         System.out.println(requsetDTO);
